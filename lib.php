@@ -4,7 +4,7 @@ function get_hods() {
 	global $CFG, $DB;
 	
 	// Change number for each version of moodle to show the hod role id.
-	$hod = 1;
+	$hod = get_config('departmentreport', 'managerroleid');
 	
 	$sql = "SELECT DISTINCT usr.id, CONCAT_WS(' ',firstname,lastname) AS hod
 			FROM mdl_user AS usr
@@ -58,7 +58,7 @@ function get_data($params) {
 	
 	global $CFG, $DB;
 	
-	$managerrole = 1;
+	//$managerrole = 1;
 	$managerrole = get_config('departmentreport', 'managerroleid');
 		
 	$coursessql = 'SELECT fullname AS course, COUNT(course.id) AS Students, course.id AS cid, course.timecreated AS created

@@ -7,6 +7,19 @@ require_once($CFG->dirroot.'/lib/statslib.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot.'/report/departments/lib.php');
 
+require_login();
+
+/** Page Settings **/
+$PAGE->set_context(context_system::instance());
+$PAGE->set_title('Departmental Report');
+$PAGE->set_heading('Departmental Report', 3);
+$PAGE->set_url('/report/departments/index.php');
+$PAGE->set_pagelayout('report');
+$PAGE->add_body_class('departmentreport');
+
+/** Navigation Bar **/
+$PAGE->navbar->ignore_active();
+$PAGE->navbar->add(get_string('pluginname', 'report_departments'), new moodle_url('/report/departments/index.php'));
 $hod	= optional_param('hod', 0, PARAM_INT); // Hod id number
 $timefrom   = optional_param('timefrom', 0, PARAM_INT); // how far back to look...
 
@@ -17,11 +30,11 @@ $params['hod'] = $hod;
 $params['date'] = $timefrom;
 
 
-$PAGE->set_url('/report/departments/index.php', $params);
-$PAGE->set_pagelayout('report');
+//$PAGE->set_url('/report/departments/index.php', $params);
+//$PAGE->set_pagelayout('report');
 
-admin_externalpage_setup('reportdepartments', '', null, '', array('pagelayout'=>'report'));
-
+//admin_externalpage_setup('report_departments', '', null, '', array('pagelayout'=>'report'));
+//admin_externalpage_setup('report_departments');
 $hods = get_hods();
 $timeoptions = get_time();
 echo $OUTPUT->header();

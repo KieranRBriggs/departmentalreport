@@ -6,11 +6,12 @@ defined('MOODLE_INTERNAL') || die;
 $ADMIN->add('reports', new admin_externalpage('reportdepartments', get_string('pluginname', 'report_departments'), "$CFG->wwwroot/report/departments/index.php"));
 
 // No report settings.
-$settings = null;
+//$settings = null;
 
-/*
+
 if ($ADMIN->fulltree) {
-	$roles -> $DB->get_records_sql('SELECT id, name FROM mdl_role);
+	global $DB;
+	$roles = $DB->get_records_sql('SELECT id, name FROM mdl_role');
 	foreach($roles as $r) {
 		$roletypes[$r->id] = $r->name;
 	}
@@ -22,4 +23,3 @@ if ($ADMIN->fulltree) {
                        get_string('descchooseroleid', 'report_departments'), 'defaultroleid', $menu));
 
 }
-*/
