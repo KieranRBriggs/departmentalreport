@@ -58,12 +58,15 @@ function get_data($params) {
 	
 	global $CFG, $DB;
 	
+	//$managerrole = 1;
+	$managerrole = get_config('departmentreport', 'managerroleid');
+		
 	$coursessql = 'SELECT fullname AS course, COUNT(course.id) AS Students, course.id AS cid, course.timecreated AS created
 			FROM mdl_role_assignments AS asg
 			JOIN mdl_context AS context ON asg.contextid = context.id AND context.contextlevel = 50
 			JOIN mdl_user AS usr on usr.id = asg.userid
 			JOIN mdl_course AS course ON context.instanceid = course.id
-			WHERE asg.roleid = 1 AND usr.id = '.$params['hod'].'
+			WHERE asg.roleid = ' .$managerrole. ' AND usr.id = '.$params['hod'].'
 			GROUP BY course.id
 			ORDER BY COUNT(course.id) DESC';
 	
@@ -87,11 +90,11 @@ function get_data($params) {
 		$update = $DB->get_record_sql($updatesql);
 		$row = array();
 		$row[] = '<a href="'.$CFG->wwwroot.'/report/outline/index.php?id='.$c->cid.'">'.$c->course.'</a>';
-		$row[] = gmdate("d/m/Y",$c->created);
+		$row[] = userdate($c->created, get_string('strftimedatefullshort', 'langconfig'));
 		$row[] = '<a href="'.$CFG->wwwroot.'/user/index.php?id='.$c->cid.'">'.$c->students.'</a>';
 		$row[] = $view->views;	
-		$row[] = gmdate("d/m/Y",$view->lastlogin);	
-		$row[] = gmdate("d/m/Y",$update->updated);	
+		$row[] = userdate($view->lastlogin,get_string('strftimedatetimeshort','langconfig'));
+		$row[] = userdate($update->updated,get_string('strftimedatetimeshort','langconfig'));	
 		$row[] = $resource->res;	
 		$row[] = $module->mods;	
 		
