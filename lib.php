@@ -58,7 +58,7 @@ function get_data($params) {
 	
 	global $CFG, $DB;
 	
-	//$managerrole = 1;
+	$managerrole = 1;
 	$managerrole = get_config('departmentreport', 'managerroleid');
 		
 	$coursessql = 'SELECT fullname AS course, COUNT(course.id) AS Students, course.id AS cid, course.timecreated AS created
