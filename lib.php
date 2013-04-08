@@ -93,8 +93,8 @@ function get_data($params) {
 		$row[] = userdate($c->created, get_string('strftimedatefullshort', 'langconfig'));
 		$row[] = '<a href="'.$CFG->wwwroot.'/user/index.php?id='.$c->cid.'">'.$c->students.'</a>';
 		$row[] = $view->views;	
-		$row[] = userdate($view->lastlogin,get_string('strftimedatetimeshort','langconfig'));
-		$row[] = userdate($update->updated,get_string('strftimedatetimeshort','langconfig'));	
+		$row[] = format_time(time() - $view->lastlogin);
+		$row[] = format_time(time() - $update->updated);	
 		$row[] = $resource->res;	
 		$row[] = $module->mods;	
 		
