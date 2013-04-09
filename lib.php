@@ -99,7 +99,7 @@ function get_data($params) {
 	//$managerrole = 1;
 	$managerrole = get_config('departmentreport', 'managerroleid');
 		
-	$coursessql = 'SELECT fullname AS course, COUNT(course.id) AS Students, course.id AS cid, course.timecreated AS created
+	$coursessql = 'SELECT fullname AS course, course.id AS cid, course.timecreated AS created
 			FROM mdl_role_assignments AS asg
 			JOIN mdl_context AS context ON asg.contextid = context.id AND context.contextlevel = 50
 			JOIN mdl_user AS usr on usr.id = asg.userid
@@ -107,15 +107,19 @@ function get_data($params) {
 			WHERE asg.roleid = ' .$managerrole. ' AND usr.id = '.$params['hod'].'
 			GROUP BY course.id
 			ORDER BY COUNT(course.id) DESC';
-	
 	$courses = $DB->get_records_sql($coursessql);
-
-
+	
 	$table = new html_table();
 	$table->align = array('left', 'center', 'center', 'center', 'center', 'center', 'center', 'center');
 	$table->head = array(get_string('course', 'report_departments'), get_string('created', 'report_departments'), get_string('enrolled', 'report_departments'), get_string('logins', 'report_departments'), get_string('lastlogin', 'report_departments'), get_string('update', 'report_departments'), get_string('resources', 'report_departments'), get_string('activities', 'report_departments'));
 	
 	foreach ($courses as $c) {
+		$studentssql = 'SELECT count(asg.id) AS students 
+FROM mdl_role_assignments as asg 
+JOIN mdl_context AS context ON asg.contextid = context.id AND context.contextlevel = 50 
+JOIN mdl_user AS usr on usr.id = asg.userid JOIN mdl_course AS course ON context.instanceid = course.id 
+WHERE asg.roleid = 5 AND course.id ='.$c->cid;
+		$students = $DB->get_record_sql($studentssql);
 		$resourcesql = 'SELECT count(id) AS res FROM mdl_resource WHERE course = '. $c->cid;
 		$resource = $DB->get_record_sql($resourcesql);
 		$modulesql = 'SELECT count(*) AS mods FROM mdl_course_modules AS cm WHERE cm.course ='. $c->cid .' AND module <> 17';
@@ -129,7 +133,8 @@ function get_data($params) {
 		$row = array();
 		$row[] = '<a href="'.$CFG->wwwroot.'/report/outline/index.php?id='.$c->cid.'">'.$c->course.'</a>';
 		$row[] = userdate($c->created, get_string('strftimedatefullshort', 'langconfig'));
-		$row[] = '<a href="'.$CFG->wwwroot.'/user/index.php?id='.$c->cid.'">'.$c->students.'</a>';
+		$row[] = '<a href="'.$CFG->wwwroot.'/user/index.php?id='.$c->cid.'">'.$students->students.'</a>';
+		//$row[] = '<a href="'.$CFG->wwwroot.'/user/index.php?id='.$c->cid.'">'.$c->students.'</a>';
 		$row[] = $view->views;	
 		$row[] = format_time(time() - $view->lastlogin);
 		$row[] = format_time(time() - $update->updated);	
