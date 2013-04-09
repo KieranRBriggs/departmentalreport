@@ -44,30 +44,30 @@ $PAGE->add_body_class('departmentreport');
 $PAGE->navbar->ignore_active();
 $PAGE->navbar->add(get_string('pluginname', 'report_departments'), new moodle_url('/report/departments/index.php'));
 
-$hod	= optional_param('hod', 0, PARAM_INT); // Hod id number
-$timefrom   = optional_param('timefrom', 0, PARAM_INT); // how far back to look...
+$hod			= optional_param('hod', 0, PARAM_INT); // Hod id number
+$timefrom   	= optional_param('timefrom', 0, PARAM_INT); // how far back to look...
+$showteachers   = optional_param('showteachers', false, PARAM_BOOL); // Show teachers in results or not
 
 $params = array();
 
 
 $params['hod'] = $hod;
 $params['date'] = $timefrom;
+//$params['teachers']	= $showteachers
 
 
-//$PAGE->set_url('/report/departments/index.php', $params);
-//$PAGE->set_pagelayout('report');
-
-//admin_externalpage_setup('report_departments', '', null, '', array('pagelayout'=>'report'));
-//admin_externalpage_setup('report_departments');
 $hods = get_hods();
 $timeoptions = get_time();
+
 echo $OUTPUT->header();
 
 echo '<div id="options"><form class="settingsform" action="'.$CFG->wwwroot.'/report/departments/index.php" method="get">';
-echo '<label for="menuhod">'.get_string('filter', 'report_departments').'</label>'."\n";
+echo '<label for="hod">'.get_string('filter', 'report_departments').'</label>'."\n";
 echo html_writer::select($hods, "hod", $hod);
-echo '  |  <label for="menutimefrom">'.get_string('loginlength', 'report_departments').'</label>'."\n";
+echo '  |  <label for="timefrom">'.get_string('loginlength', 'report_departments').'</label>'."\n";
 echo html_writer::select($timeoptions,'timefrom',$timefrom);
+echo '  |  <label for="showteachers">'.get_string('showteachers', 'report_departments').'</label> '."\n";
+echo html_writer::checkbox('showteachers', true, false);
 echo '<span style="float:right;"><input type="submit" value="Run Report" /></span></form></div>';
 
 //switch ($reporttype) {

@@ -32,6 +32,7 @@ $string['descchooseroleid'] = 'Choose Management Role to use for Report';
 // Report Options field labels
 $string['filter'] = 'Filter on: ';
 $string['loginlength'] = 'Show Logins for last: ';
+$string['showteachers'] = 'Show teachers: ';
 
 // Table Headers
 $string['course'] = 'Course Name';
