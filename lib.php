@@ -106,7 +106,7 @@ function get_data($params) {
 			JOIN mdl_course AS course ON context.instanceid = course.id
 			WHERE asg.roleid = ' .$managerrole. ' AND usr.id = '.$params['hod'].'
 			GROUP BY course.id
-			ORDER BY COUNT(course.id) DESC';
+			ORDER BY fullname ASC';
 	$courses = $DB->get_records_sql($coursessql);
 	
 	$table = new html_table();
