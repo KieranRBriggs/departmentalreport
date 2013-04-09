@@ -37,11 +37,12 @@ if ($ADMIN->fulltree) {
 	foreach($roles as $r) {
 		$roletypes[$r->id] = $r->name;
 	}
-    $menu = array('1'=>'Manager', '3'=>'teacher', '5'=>'student');
+    
+    
   
 
     $settings->add(new admin_setting_configselect('departmentreport/managerroleid',
                        get_string('chooseroleid', 'report_departments'),
-                       get_string('descchooseroleid', 'report_departments'), 'defaultroleid', $menu));
+                       get_string('descchooseroleid', 'report_departments'), 'defaultroleid', $roletypes));
 
 }
