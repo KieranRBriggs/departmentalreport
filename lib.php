@@ -19,7 +19,7 @@ function get_hods() {
 	return $content;
 }
 
-function get_time($param) {
+function get_time($param = null) {
 	global $CFG, $DB;
 	
 	$timeoptions = array();

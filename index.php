@@ -20,6 +20,7 @@ $PAGE->add_body_class('departmentreport');
 /** Navigation Bar **/
 $PAGE->navbar->ignore_active();
 $PAGE->navbar->add(get_string('pluginname', 'report_departments'), new moodle_url('/report/departments/index.php'));
+
 $hod	= optional_param('hod', 0, PARAM_INT); // Hod id number
 $timefrom   = optional_param('timefrom', 0, PARAM_INT); // how far back to look...
 
@@ -40,9 +41,9 @@ $timeoptions = get_time();
 echo $OUTPUT->header();
 
 echo '<div id="options"><form class="settingsform" action="'.$CFG->wwwroot.'/report/departments/index.php" method="get">';
-echo '<label for="menuhod">Department Head: </label>'."\n";
+echo '<label for="menuhod">'.get_string('filter', 'report_departments').'</label>'."\n";
 echo html_writer::select($hods, "hod", $hod);
-echo '  |  <label for="menutimefrom">Show logins for last: </label>'."\n";
+echo '  |  <label for="menutimefrom">'.get_string('loginlength', 'report_departments').'</label>'."\n";
 echo html_writer::select($timeoptions,'timefrom',$timefrom);
 echo '<span style="float:right;"><input type="submit" value="Run Report" /></span></form></div>';
 
