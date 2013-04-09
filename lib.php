@@ -1,5 +1,34 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Departmental Report.
+ *
+ * Has a number of functions for the report
+ *
+ * @package report_departments
+ * @copyright 2013 Kieran Briggs - The Sheffield College
+ * @email: kieran.briggs@sheffcol.ac.uk
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/**
+ * This report gets a list of all the users with
+ * the role which was set in the settings page
+ */
 function get_hods() {
 	global $CFG, $DB;
 	
@@ -19,7 +48,11 @@ function get_hods() {
 	return $content;
 }
 
-function get_time($param = null) {
+/** 
+ * This function sets the time to go back through
+ * the logs for login details 
+ */
+function get_time() {
 	global $CFG, $DB;
 	
 	$timeoptions = array();
@@ -54,6 +87,11 @@ function get_time($param = null) {
 	return $timeoptions;
 }
 
+/**
+ * This is the main function which creates the table
+ * in the report
+ * @$params - Array including the userid to searh on and time for logins
+ */
 function get_data($params) {
 	
 	global $CFG, $DB;
@@ -104,40 +142,4 @@ function get_data($params) {
 	$content = html_writer::table($table);
 	
 	return $content;
-}
-
-function get_never_viewed_courses($params) {
-	
-	global $CFG, $DB;
-	
-	$sql = 'SELECT id, fullname AS Course
-,(SELECT Count( ra.userid ) AS Users FROM mdl_role_assignments AS ra
-JOIN mdl_context AS ctx ON ra.contextid = ctx.id
-WHERE ra.roleid = 3 AND ctx.instanceid = c.id) AS Teachers
-FROM mdl_course AS c
-ORDER BY Teachers ASC';
-
-	$courses = $DB->get_records_sql($sql);
-	
-	$table = new html_table();
-	$table->align = array('left', 'left');
-	$table->head = array('Course Name', 'No. of Resources');
-	foreach ($courses as $c) {
-		
-		$resourcesql = 'SELECT count(id) AS res FROM mdl_resource WHERE course = '. $c->id;
-		$resource = $DB->get_records_sql($resourcesql);
-		$row = array();
-		$row[] = $c->course;
-		foreach($resource as $r) {
-			$row[] = $r->res;	
-		}
-		//$row[] = $c->students;
-		
-		$table->data[] = $row;
-	}
-	
-	$content = html_writer::table($table);
-	
-	return $content;
-
 }
