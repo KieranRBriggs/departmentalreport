@@ -75,7 +75,7 @@ function get_data($params) {
 
 	$table = new html_table();
 	$table->align = array('left', 'center', 'center', 'center', 'center', 'center', 'center', 'center');
-	$table->head = array('Course Name', 'Created On', 'Enroled Students', 'Logins', 'Last Login', 'Last Update', 'Resources', 'Activites');
+	$table->head = array(get_string('course', 'report_departments'), get_string('created', 'report_departments'), get_string('enrolled', 'report_departments'), get_string('logins', 'report_departments'), get_string('lastlogin', 'report_departments'), get_string('update', 'report_departments'), get_string('resources', 'report_departments'), get_string('activities', 'report_departments'));
 	
 	foreach ($courses as $c) {
 		$resourcesql = 'SELECT count(id) AS res FROM mdl_resource WHERE course = '. $c->cid;
