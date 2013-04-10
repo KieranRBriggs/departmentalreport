@@ -36,6 +36,7 @@ $string['showteachers'] = 'Show teachers: ';
 
 // Table Headers
 $string['course'] = 'Course Name';
+$string['teachers'] = 'Editing Teachers';
 $string['created'] = 'Created On';
 $string['enrolled'] = 'Enrolled Students';
 $string['logins'] = 'Logins';

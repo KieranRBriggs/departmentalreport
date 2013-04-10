@@ -53,7 +53,7 @@ $params = array();
 
 $params['hod'] = $hod;
 $params['date'] = $timefrom;
-//$params['teachers']	= $showteachers
+$params['showteachers'] = $showteachers;
 
 
 $hods = get_hods();

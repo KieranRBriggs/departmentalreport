@@ -26,6 +26,32 @@
  */
 
 /**
+ * Given a course id number, this function
+ * gets returns a list of teachers on that course
+ */
+function get_teachers($cid){
+	global $CFG, $DB;
+	
+	$teacherssql = 'SELECT DISTINCT usr.id AS uid, CONCAT_WS(" ",firstname, lastname) AS teacher FROM mdl_user AS usr
+					JOIN mdl_role_assignments AS asg ON asg.userid = usr.id
+					JOIN mdl_context AS cont ON asg.contextid = cont.id AND cont.contextlevel = 50
+					JOIN mdl_course AS crs ON cont.instanceid = crs.id
+					WHERE crs.id = '.$cid .' AND asg.roleid = 3';
+	
+	$teachers = $DB->get_records_sql($teacherssql);
+	
+	if($teachers) {
+		$content = '';
+		foreach($teachers as $t) {
+			$content .= '<a href="'.$CFG->wwwroot.'/user/profile.php?id='.$t->uid.'">'.$t->teacher.'</a>, ';
+		}
+	} else {
+		$content = 'No Teachers';
+	}
+	
+	return $content;
+}
+/**
  * This report gets a list of all the users with
  * the role which was set in the settings page
  */
@@ -110,10 +136,16 @@ function get_data($params) {
 	$courses = $DB->get_records_sql($coursessql);
 	
 	$table = new html_table();
+	if($params['showteachers'] == 1) {
+		$table->align = array('left', 'center','center', 'center', 'center', 'center', 'center', 'center', 'center');
+	$table->head = array(get_string('course', 'report_departments'), get_string('teachers', 'report_departments'), get_string('created', 'report_departments'), get_string('enrolled', 'report_departments'), get_string('logins', 'report_departments'), get_string('lastlogin', 'report_departments'), get_string('update', 'report_departments'), get_string('resources', 'report_departments'), get_string('activities', 'report_departments'));
+
+	} else {
 	$table->align = array('left', 'center', 'center', 'center', 'center', 'center', 'center', 'center');
 	$table->head = array(get_string('course', 'report_departments'), get_string('created', 'report_departments'), get_string('enrolled', 'report_departments'), get_string('logins', 'report_departments'), get_string('lastlogin', 'report_departments'), get_string('update', 'report_departments'), get_string('resources', 'report_departments'), get_string('activities', 'report_departments'));
-	
+	}
 	foreach ($courses as $c) {
+		$teach = get_teachers($c->cid);
 		$studentssql = 'SELECT count(asg.id) AS students 
 FROM mdl_role_assignments as asg 
 JOIN mdl_context AS context ON asg.contextid = context.id AND context.contextlevel = 50 
@@ -132,6 +164,9 @@ WHERE asg.roleid = 5 AND course.id ='.$c->cid;
 		$update = $DB->get_record_sql($updatesql);
 		$row = array();
 		$row[] = '<a href="'.$CFG->wwwroot.'/report/outline/index.php?id='.$c->cid.'">'.$c->course.'</a>';
+		if ($params['showteachers'] == 1) {
+			$row[] = $teach;
+		}
 		$row[] = userdate($c->created, get_string('strftimedatefullshort', 'langconfig'));
 		$row[] = '<a href="'.$CFG->wwwroot.'/user/index.php?id='.$c->cid.'">'.$students->students.'</a>';
 		//$row[] = '<a href="'.$CFG->wwwroot.'/user/index.php?id='.$c->cid.'">'.$c->students.'</a>';
