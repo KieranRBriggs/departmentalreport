@@ -183,3 +183,25 @@ WHERE asg.roleid = 5 AND course.id ='.$c->cid;
 	
 	return $content;
 }
+
+/**
+ * Exports report as a CSV file
+ */
+function export_csv($fields, $hod) {
+	
+	global $CFG;
+	
+	require_once($CFG->dirroot.'/lib/moodlelib.php');
+	require_once($CFG->dirroot.'/lib/csvlib.class.php');
+	
+	$filename = 'departmental_report-'.$hod;
+	print($fields);	
+	
+	$csvexport = new csv_export_writer();
+    $csvexport->set_filename($filename);
+	$csvexport->add_data($fields);
+	$csvexport->download_file();
+	
+	die;
+	
+}

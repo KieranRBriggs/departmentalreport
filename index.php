@@ -47,6 +47,7 @@ $PAGE->navbar->add(get_string('pluginname', 'report_departments'), new moodle_ur
 $hod			= optional_param('hod', 0, PARAM_INT); // Hod id number
 $timefrom   	= optional_param('timefrom', 0, PARAM_INT); // how far back to look...
 $showteachers   = optional_param('showteachers', false, PARAM_BOOL); // Show teachers in results or not
+$reporttype   	= optional_param('reporttype', 'display', PARAM_RAW); // Show teachers in results or not
 
 $params = array();
 
@@ -54,32 +55,48 @@ $params = array();
 $params['hod'] = $hod;
 $params['date'] = $timefrom;
 $params['showteachers'] = $showteachers;
+if(!$reporttype) {
+	$params['type'] = 'display';
+} else {
+	$params['type'] = $reporttype;
+}
 
 
 $hods = get_hods();
 $timeoptions = get_time();
+$outputtypes = array('display'=>'display', 'csv'=>'csv');
 
 echo $OUTPUT->header();
 
 echo '<div id="options"><form class="settingsform" action="'.$CFG->wwwroot.'/report/departments/index.php" method="get">';
+
 echo '<label for="hod">'.get_string('filter', 'report_departments').'</label>'."\n";
 echo html_writer::select($hods, "hod", $hod);
+
 echo '  |  <label for="timefrom">'.get_string('loginlength', 'report_departments').'</label>'."\n";
 echo html_writer::select($timeoptions,'timefrom',$timefrom);
+
 echo '  |  <label for="showteachers">'.get_string('showteachers', 'report_departments').'</label> '."\n";
 echo html_writer::checkbox('showteachers', true, false);
+
+echo '  |  <label for="reporttype">'.get_string('reporttype', 'report_departments').'</label> '."\n";
+echo html_writer::select($outputtypes,'reporttype',$reporttype);
+
 echo '<span style="float:right;"><input type="submit" value="Run Report" /></span></form></div>';
 
-//switch ($reporttype) {
-//	case showhtml:
+switch ($params['type']) {
+	case 'display':
 		$results = get_data($params);
 		echo $results;
 		echo '<p><em>Click on the course title for a more indepth report on that course.</em></p>';
+		break;
 		
-//		break;
-//	case excel:
-//		break;
-//}
+	case 'csv':
+		$results = get_data($params);
+		echo $results;
+		//$content = 'Blobby - Mr Blobby';
+		//export_csv($content, $params['hod']);
+}
 
 
 echo $OUTPUT->footer();
