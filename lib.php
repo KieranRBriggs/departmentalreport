@@ -185,23 +185,69 @@ WHERE asg.roleid = 5 AND course.id ='.$c->cid;
 }
 
 /**
- * Exports report as a CSV file
+ * This function gets the data but ready for downloading
+ * into a file rather than displaying
+ * @$params - Array including the userid to searh on and time for logins
  */
-function export_csv($fields, $hod) {
+function get_download_data($params) {
+		global $CFG, $DB;
 	
-	global $CFG;
+	//$managerrole = 1;
+	$managerrole = get_config('departmentreport', 'managerroleid');
+		
+	$coursessql = 'SELECT fullname AS course, course.id AS cid, course.timecreated AS created
+			FROM mdl_role_assignments AS asg
+			JOIN mdl_context AS context ON asg.contextid = context.id AND context.contextlevel = 50
+			JOIN mdl_user AS usr on usr.id = asg.userid
+			JOIN mdl_course AS course ON context.instanceid = course.id
+			WHERE asg.roleid = ' .$managerrole. ' AND usr.id = '.$params['hod'].'
+			GROUP BY course.id
+			ORDER BY fullname ASC';
+	$courses = $DB->get_records_sql($coursessql);
+	$rows = array();
+	$i = 1;
+		
+	foreach ($courses as $c) {
+		$row = array();
+		$usersql = 'SELECT CONCAT_WS(" ", firstname, lastname) AS depthead FROM mdl_user WHERE mdl_user.id ='.$params['hod'];
+		$user = $DB->get_record_sql($usersql);
+		$row["depthead"] = $user->depthead;
+		$teach = get_teachers($c->cid);
+		$studentssql = 'SELECT count(asg.id) AS students 
+FROM mdl_role_assignments as asg 
+JOIN mdl_context AS context ON asg.contextid = context.id AND context.contextlevel = 50 
+JOIN mdl_user AS usr on usr.id = asg.userid JOIN mdl_course AS course ON context.instanceid = course.id 
+WHERE asg.roleid = 5 AND course.id ='.$c->cid;
+		$students = $DB->get_record_sql($studentssql);
+		$resourcesql = 'SELECT count(id) AS res FROM mdl_resource WHERE course = '. $c->cid;
+		$resource = $DB->get_record_sql($resourcesql);
+		$modulesql = 'SELECT count(*) AS mods FROM mdl_course_modules AS cm WHERE cm.course ='. $c->cid .' AND module <> 17';
+		$module = $DB->get_record_sql($modulesql);
+		$viewsql = 'SELECT DISTINCT count(id) AS views, MAX(time) AS lastlogin FROM mdl_log WHERE course = '. $c->cid . ' AND action = "view" AND time > '.$params["date"];
+		$view = $DB->get_record_sql($viewsql);
+		
+		$updatesql = 'SELECT course, MAX(time) AS Updated FROM mdl_log
+						WHERE (action LIKE "%add%" OR action = "update") AND course = '.$c->cid;
+		$update = $DB->get_record_sql($updatesql);
+		$row['coursename'] = $c->course;
+		if ($params['showteachers'] == 1) {
+			$row['editingteachers'] = rtrim(strip_tags($teach), ",");
+		}
+		$row['createdon'] = userdate($c->created, get_string('strftimedatefullshort', 'langconfig'));
+		$row['enrolledstudents'] = $students->students;
+		//$row[] = '<a href="'.$CFG->wwwroot.'/user/index.php?id='.$c->cid.'">'.$c->students;
+		$row['logins'] = $view->views;	
+		$row['lastlogin'] = userdate($view->lastlogin, get_string('strftimedatefullshort', 'langconfig'));
+		$row['lastupdate'] = userdate($update->updated, get_string('strftimedatefullshort', 'langconfig'));	
+		$row['resources'] = $resource->res;	
+		$row['activites'] = $module->mods;	
+
+		$rows[$i] = $row;
+		$i++;
+	}
 	
-	require_once($CFG->dirroot.'/lib/moodlelib.php');
-	require_once($CFG->dirroot.'/lib/csvlib.class.php');
+		return $rows;
+
 	
-	$filename = 'departmental_report-'.$hod;
-	print($fields);	
-	
-	$csvexport = new csv_export_writer();
-    $csvexport->set_filename($filename);
-	$csvexport->add_data($fields);
-	$csvexport->download_file();
-	
-	die;
-	
-}
+} 
+ 

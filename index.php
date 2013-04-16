@@ -87,14 +87,14 @@ $results = get_data($params);
 echo $results;
 echo '<p><em>Click on the course title for a more indepth report on that course.</em></p>';
 
-
+echo '<hr />';
 echo '<div id="downloadoptions"><form class="settingsform" action="'.$CFG->wwwroot.'/report/departments/download.php" method="get">';
 
 echo '<label for="format">'.get_string('downloadoption', 'report_departments').'</label> '."\n";
 echo html_writer::select($outputtypes,'format',$downloadtype);
 echo '<input type="hidden" name="hod" value="'.$params['hod'].'">';
-echo '<input type="hidden" name="hod" value="'.$params['date'].'">';
-echo '<input type="hidden" name="hod" value="'.$params['showteachers'].'">';
+echo '<input type="hidden" name="date" value="'.$params['date'].'">';
+echo '<input type="hidden" name="showteachers" value="'.$params['showteachers'].'">';
 
 echo ' <input type="submit" value="Download" /></form></div>';
 

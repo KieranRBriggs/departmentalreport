@@ -15,7 +15,7 @@ $return = $CFG->wwwroot.'/'.$CFG->dirroot.'/report/departments.php';
 $format 		= optional_param('format', '', PARAM_ALPHA);
 $hod			= optional_param('hod', 0, PARAM_INT); // Hod id number
 $timefrom   	= optional_param('date', 0, PARAM_INT); // how far back to look...
-$showteachers   = optional_param('showteachers', false, PARAM_BOOL); // Show teachers in results or not
+$showteachers   = optional_param('showteachers', 0, PARAM_INT); // Show teachers in results or not
 
 $params = array();
 
@@ -26,7 +26,22 @@ $params['showteachers'] = $showteachers;
 
 
 if ($format) {
-    $fields = array('coursename'        => 'Course Name',
+    if ($showteachers == 1) {
+    	$fields = array(
+    				'depthead'			=> 'Department Head',
+    				'coursename'   		=> 'Course Name',
+                    'editingteachers'	=> 'Editing Teachers',
+                    'createdon'  		=> 'Created On',
+                    'enrolledstudents'	=> 'Enrolled Students',
+                    'logins' 			=> 'Logins',
+                    'lastlogin'  		=> 'Last Login',
+                    'lastupdate'  		=> 'Last Update',
+                    'resources' 		=> 'Resources',
+                    'activites' 		=> 'Activites');
+    } else {
+		$fields = array(
+					'depthead'			=> 'Department Head',
+    				'coursename'    	=> 'Course Name',
                     'createdon'  		=> 'Created On',
                     'enrolledstudents'	=> 'Enrolled Students',
                     'logins' 			=> 'Logins',
@@ -35,6 +50,7 @@ if ($format) {
                     'resources' 		=> 'Resources',
                     'activites' 		=> 'Activites');
 
+    }
 
     switch ($format) {
         case 'csv' : user_download_csv($fields, $params);
@@ -124,17 +140,20 @@ function user_download_xls($fields) {
 
 function user_download_csv($fields, $params) {
     global $CFG, $DB;
-
     require_once($CFG->libdir . '/csvlib.class.php');
     $data = get_download_data($params);
-
-    $filename = clean_filename(get_string('filename','report_departments')).'_user'.$params['hod'];
-
+    
+    $usersql = 'SELECT CONCAT_WS(" ", firstname, lastname) AS depthead FROM mdl_user WHERE mdl_user.id ='.$params['hod'];
+	$user = $DB->get_record_sql($usersql);
+	
+	$filename = $user->depthead.'-'.get_string('reportname', 'report_departments');
     $csvexport = new csv_export_writer();
     $csvexport->set_filename($filename);
     $csvexport->add_data($fields);
-
-
+    foreach($data as $d) {
+	    $csvexport->add_data($d);
+    }
+    
     $csvexport->download_file();
     die;
 }

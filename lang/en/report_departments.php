@@ -47,4 +47,4 @@ $string['update'] = 'Last Update';
 $string['resources'] = 'Resources';
 $string['activities'] = 'Activites';
 
-$string['filename'] = 'dept_report';
+$string['reportname'] = 'VLE_department_usage_report';
