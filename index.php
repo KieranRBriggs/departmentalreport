@@ -64,9 +64,10 @@ if(!$downloadtype) {
 
 $hods = get_hods();
 $timeoptions = get_time();
-$outputtypes = array('xls'=>'*.xls file', 'csv'=>'*.csv file', 'ods'=>'*.ods file');
+$outputtypes = array('xls'=>'*.xls file', 'csv'=>'*.csv file');
 
 echo $OUTPUT->header();
+
 
 // Options Form
 echo '<div id="options"><form class="settingsform" action="'.$CFG->wwwroot.'/report/departments/index.php" method="get">';
@@ -90,13 +91,13 @@ echo '<p><em>Click on the course title for a more indepth report on that course.
 echo '<hr />';
 echo '<div id="downloadoptions"><form class="settingsform" action="'.$CFG->wwwroot.'/report/departments/download.php" method="get">';
 
-echo '<label for="format">'.get_string('downloadoption', 'report_departments').'</label> '."\n";
-echo html_writer::select($outputtypes,'format',$downloadtype);
+//echo '<label for="format">'.get_string('downloadoption', 'report_departments').'</label> '."\n";
+//echo html_writer::select($outputtypes,'format',$downloadtype);
+echo '<input type="hidden" name="format" value="csv">';
 echo '<input type="hidden" name="hod" value="'.$params['hod'].'">';
 echo '<input type="hidden" name="date" value="'.$params['date'].'">';
 echo '<input type="hidden" name="showteachers" value="'.$params['showteachers'].'">';
 
-echo ' <input type="submit" value="Download" /></form></div>';
-
+echo ' <input type="submit" value="Download Report" /></form></div>';
 
 echo $OUTPUT->footer();
